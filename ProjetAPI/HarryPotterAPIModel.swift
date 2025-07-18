@@ -8,15 +8,13 @@
 import Foundation
 import Observation
 
-// Exemple de modèle pour récupérer les personnages Harry Potter via une API publique
-// (par exemple https://hp-api.onrender.com/api/characters)
 @Observable
-final class HarryPotterAPIModel {
+ class HarryPotterAPIModel {
     var characters: [Character] = []
     var isLoading: Bool = false
     var errorMessage: String?
 
-    // Structure de personnage simplifiée
+    
     struct Character: Codable, Identifiable {
         let id = UUID()
         let name: String
@@ -28,12 +26,12 @@ final class HarryPotterAPIModel {
         }
     }
 
-    // Récupère la liste des personnages
+    
     @MainActor
     func fetchCharacters() async {
         isLoading = true
         errorMessage = nil
-        let urlString = "https://hp-api.onrender.com/api/characters"
+        let urlString = "https://potterhead-api.vercel.app/api/characters"
         guard let url = URL(string: urlString) else {
             errorMessage = "URL invalide"
             isLoading = false
