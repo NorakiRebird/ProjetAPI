@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 struct CharacterDetail: View {
     let character: HarryPotterAPIModel.Character
     @State private var darkMode = false
@@ -17,47 +18,29 @@ struct CharacterDetail: View {
             Color("colorHp")
                 .ignoresSafeArea()
             VStack {
-                if let imageUrlString = character.image, let url = URL(string: imageUrlString) {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .empty:
-                            ProgressView()
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .scaledToFill()
-                                .clipped()
-                                .clipShape(.circle)
-                                .frame(maxWidth: 200, maxHeight: 200)
-                                .shadow(color: .black, radius: 5)
-                        case .failure:
-                            Image(systemName: "photo")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(maxWidth: 200, maxHeight: 200)
-                                .foregroundColor(.gray)
-                        @unknown default:
-                            EmptyView()
-                        }
-                    }
-                }
-                Spacer()
+                CharacterProfileImage(
+                    imageUrlString: character.image,
+                    gender: character.gender
+                )
+                
+               
                 Text(character.name)
                     .font(.custom("HarryPotter", size: 50))
                     .padding(.top)
                
-                Spacer()
-                if let house = character.house {
-                    if house == "teacher" {
-                        Text("Teachers")
-                    } else {
-                        Text("School : ")
-                            .padding()
-                        Text(house)
-                            .font(.custom("HarryPotter", size: 50))
-                            .font(.subheadline)
-                    }
+                ScrollView(showsIndicators: false) {
+                    CharacterHouseSection(
+                        house: character.house,
+                        school: character.school
+                    )
                 }
+                
+                CharacterInfoDetails(character: character)
+               
+                Spacer()
+            
+                
+              
                 Spacer()
             }
         }
@@ -65,5 +48,20 @@ struct CharacterDetail: View {
 }
 
 #Preview {
-    CharacterDetail(character: .init(name: "Harry Potter", house: "Gryffindor", image: nil))
+    CharacterDetail(character: .init(
+        id: "1",
+        name: "Harry Potter",
+        alternateNames: ["The Boy Who Lived", "The Chosen One"],
+        species: "Human",
+        gender: "Male",
+        house: "Gryffindor",
+        dateOfBirth: "31-07-1980",
+        yearOfBirth: 1980,
+        wizard: true,
+        ancestry: "Half-blood",
+        eyeColour: "Green",
+        hairColour: "Black",
+        image: "https://ik.imagekit.io/hpapi/harry.jpg",
+        wand: HarryPotterAPIModel.Character.Wand(wood: "Holly", core: "Phoenix Feather", length: 11)
+    ))
 }

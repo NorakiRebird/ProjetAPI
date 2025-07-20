@@ -11,56 +11,78 @@ struct ImageViews: View {
     let characterHp: HarryPotterAPIModel.Character
     @State private var searchText = ""
     @State private var darkMode = false
+    let school: School?
+    var fallbackImage: some View {
+        Image(systemName: "photo.fill")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(height: 200)
+            .foregroundColor(.gray)
+            .cornerRadius(12)
+    }
     
     
     var body: some View {
-       
+        
         VStack {
-            AsyncImage(url: URL(string: characterHp.image ?? "")) { phase in
-                switch phase {
-                case .empty:
-                    ProgressView()
-                case .success(let image):
-                    image
-                        .resizable()
-                        .scaledToFill()
-                        .cornerRadius(16)
-                        .frame(height: 300)
-                        .clipped()
-                        .padding()
-                        
-                    
-                        
-                        Text(characterHp.name)
-                        .font(.custom("HarryPotter", size: 30))
-                        .foregroundColor(.black)
-                        .fontWeight(.light)
-                    
-                case .failure:
-                    Image(systemName: "photo.fill")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 200)
-                        .foregroundColor(.gray)
-                        .cornerRadius(12)
-                @unknown default:
-                    EmptyView()
+            let validImageUrlString = (characterHp.image?.isEmpty == false && URL(string: characterHp.image!)?.scheme?.hasPrefix("http") == true)
+                ? characterHp.image!
+                : "https://hp-api.lainocs.fr/images/harry_potter.png"
+            if let url = URL(string: validImageUrlString) {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .cornerRadius(16)
+                            .frame(height: 300)
+                            .clipped()
+                            .clipShape(.circle)
+                            .padding()
+                            .shadow(color: .primary, radius: 5)
+                    case .failure:
+                        fallbackImage
+                    @unknown default:
+                        fallbackImage
+                    }
                 }
+                
+                HStack {
+                    Text(characterHp.name)
+                        .foregroundColor(.primary)
+                        .font(.custom("HarryPotter", size: 30))
+                    Text(characterHp.dateOfBirth ?? "No birth date")
+                        .foregroundColor(.primary)
+                }
+            } else {
+                fallbackImage
             }
-           
         }
-        .padding()
-        .background(Color(darkMode ? .black : .white))
-        .cornerRadius(16)
-        .shadow(radius: 8)
+        
     }
+    
 }
-
 #Preview {
     let CharacterHp = HarryPotterAPIModel.Character(
+        id: "1",
         name: "Harry Potter",
+        alternateNames: ["The Boy Who Lived"],
+        species: "human",
+        gender: "male",
         house: "Gryffindor",
-        image: nil
+        dateOfBirth: "31-07-1980",
+        yearOfBirth: 1980,
+        wizard: true,
+        ancestry: "half-blood",
+        eyeColour: "green",
+        hairColour: "black",
+        image: "https://ik.imagekit.io/hpapi/harry.jpg",
+
+        wand: .init(wood: "holly", core: "phoenix feather", length: 11.0)
     )
-    ImageViews(characterHp: CharacterHp)
+    ImageViews(characterHp: CharacterHp, school: .gryffindor)
 }
+
