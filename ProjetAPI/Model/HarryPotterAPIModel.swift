@@ -8,6 +8,8 @@
 import Foundation
 import Observation
 
+
+
 @Observable
  class HarryPotterAPIModel {
     var characters: [Character] = []
@@ -16,13 +18,42 @@ import Observation
 
     
     struct Character: Codable, Identifiable {
-        let id = UUID()
+        let id: String
         let name: String
+        let alternateNames: [String]?
+        let species: String?
+        let gender: String?
         let house: String?
+        let dateOfBirth: String?
+        let yearOfBirth: Int?
+        let wizard: Bool?
+        let ancestry: String?
+        let eyeColour: String?
+        let hairColour: String?
         let image: String?
-        
+        let wand: Wand?
+
+        struct Wand: Codable {
+            let wood: String?
+            let core: String?
+            let length: Double?
+        }
+
         enum CodingKeys: String, CodingKey {
-            case name, house, image
+            case id
+            case name
+            case alternateNames 
+            case species
+            case gender
+            case house
+            case dateOfBirth
+            case yearOfBirth
+            case wizard
+            case ancestry
+            case eyeColour
+            case hairColour
+            case image
+            case wand
         }
     }
 
@@ -47,3 +78,4 @@ import Observation
         isLoading = false
     }
 }
+
